@@ -96,9 +96,9 @@ a.signup_button {
 /*---------------- Rounded Corners ----------------*/
 
 .round {
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
 
 /*---------------- Sign Up Button ----------------*/
@@ -132,6 +132,7 @@ td.sidebar {
     padding: 1em;
     vertical-align: top;
     background: #ffc;
+    border: 1px solid #ca6;
 }
 
 .profile img.gravatar {
