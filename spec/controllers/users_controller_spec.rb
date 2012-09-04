@@ -39,6 +39,26 @@ describe UsersController do
       get :new
       response.should have_selector("title", :content => "Sign Up")
     end
+
+    it "should have a Name field" do
+      get :new
+      response.should have_selector("input[name='user[name]'][type='text']")
+    end
+
+    it "should have an Email field" do
+      get :new
+      response.should have_selector("input[name='user[email]'][type='text']")
+    end
+
+    it "should have a Password field" do
+      get :new
+      response.should have_selector("input[name='user[password]'][type='password']")
+    end
+
+    it "should have a Password Confirmation field" do
+      get :new
+      response.should have_selector("input[name='user[password_confirmation]'][type='password']")
+    end
   end
 
   describe "POST 'create'" do
@@ -66,6 +86,18 @@ describe UsersController do
       it "should render the 'new' page" do
         post(:create, :user => @attr)
         response.should render_template('new')
+        response.should have_selector("input[name='user[password]']", :content => "")
+        response.should have_selector("input[name='user[password_confirmation]']", :content => "")
+      end
+
+      it "should have an empty Password field" do
+        post(:create, :user => @attr)
+        response.should have_selector("input[name='user[password]']", :content => "")
+      end
+
+      it "should have an empty Password Confirmation field" do
+        post(:create, :user => @attr)
+        response.should have_selector("input[name='user[password_confirmation]']", :content => "")
       end
     end
 
