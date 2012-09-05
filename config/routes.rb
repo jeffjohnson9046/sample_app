@@ -1,4 +1,6 @@
 SampleApp::Application.routes.draw do
+  get "sessions/new"
+
   resources :users
   # Adding the resources :users line creates the following named routes automagically:
 
@@ -12,9 +14,21 @@ SampleApp::Application.routes.draw do
   # PUT        /users/1        update      user_path(1)
   # DELETE     /users/1        destroy     user_path(1)
 
+  resources :sessions, :only => [:new, :create, :destroy]
+
+  # REQUEST    URL             ACTION      NAMED ROUTE
+  # --------------------------------------------------------
+  # GET        /signin         new         signin_path
+  # POST       /sessions       create      session_path
+  # DELETE     /signout        destroy     signout_path
+
+
   match '/contact', :to => 'pages#contact'
   match '/about',   :to => 'pages#about'
   match '/help',    :to => 'pages#help'
+
+  match '/signin',  :to => 'sessions#new'
+  match '/signout', :to => 'sessions#destroy'
 
   match '/signup',  :to => 'users#new'
 
