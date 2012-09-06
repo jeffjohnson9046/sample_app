@@ -70,7 +70,29 @@ describe User do
     user_with_duplicate_email.should_not be_valid
   end
 
+  describe "admin attribute" do
+
+    before(:each) do
+      @user = User.create!(@attr)
+    end
+
+    it "should respond to admin" do
+      @user.should respond_to(:admin)
+    end
+
+    it "should not be an admin by default" do
+      @user.should_not be_admin
+    end
+
+    it "should be convertible to admin" do
+      @user.toggle!(:admin)
+      @user.should be_admin
+    end
+
+  end
+
   describe "password validations" do
+
     it "should require a password" do
       User.new(@attr.merge(:password => "", :password_confirmation => "")).should_not be_valid
     end
@@ -84,9 +106,11 @@ describe User do
       long_pass = "a" * 41
       User.new(@attr.merge(:password => long_pass, :password_confirmation => long_pass)).should_not be_valid
     end
+
   end
 
   describe "password encryption" do
+
     before(:each) do
       @user = User.create!(@attr)
     end
@@ -100,6 +124,7 @@ describe User do
     end
 
     describe "'has_password?' method" do
+
       it "should return true if the User has a password assigned" do
         @user.has_password?(@attr[:password]).should be_true
       end
@@ -107,9 +132,11 @@ describe User do
       it "should return false if the User has no password assigned" do
         @user.has_password?("invalid").should be_false
       end
+
     end
 
     describe "authenticate method" do
+
       it "should return nil on email/password mismatch" do
         wrong_password_user = User.authenticate(@attr[:email], "wrongpass")
         wrong_password_user.should be_nil
@@ -124,6 +151,9 @@ describe User do
         valid_user = User.authenticate(@attr[:email], @attr[:password])
         valid_user.should == @user
       end
+
     end
+
   end
+
 end

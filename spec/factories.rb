@@ -6,5 +6,13 @@ FactoryGirl.define do
     email "bigdaddyv@deathstar.com"
     password "foobar"
     password_confirmation "foobar"
+
+    factory :admin do
+      admin true
+    end
+  end
+
+  sequence :email do |i|
+    "email-#{ i }@example.com"
   end
 end

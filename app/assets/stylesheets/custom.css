@@ -115,6 +115,16 @@ footer nav {
     float: none;
 }
 
+/*---------------- User Index Page ----------------*/
+
+ul.users {
+    margin-top: 1em;
+}
+
+.users li {
+    list-style: none;
+}
+
 /*---------------- User Show Page ----------------*/
 
 table.profile {
