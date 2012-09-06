@@ -32,8 +32,8 @@ describe UsersController do
     describe "as an ADMIN user" do
 
       before(:each) do
-        admin = FactoryGirl.create(:admin, :email => "admin@example.com")
-        test_sign_in(admin)
+        @admin = FactoryGirl.create(:admin, :email => "admin@example.com")
+        test_sign_in(@admin)
       end
 
       it "should destroy the user" do
@@ -46,6 +46,17 @@ describe UsersController do
         lambda do
           delete(:destroy, :id => @user)
         end.should redirect_to(users_path)
+      end
+
+      it "should not be able to destroy its own account" do
+        lambda do
+          delete(:destroy, :id => @admin)
+        end.should_not change(User, :count)
+      end
+
+      it "should show an error message when trying to destroy its own account" do
+        delete(:destroy, :id => @admin)
+        flash[:error].should =~ /cannot delete your own account/
       end
 
     end
@@ -106,6 +117,27 @@ describe UsersController do
                                            :content => "2")
         response.should have_selector("a", :href => "/users?page=2",
                                            :content => "Next")
+      end
+
+      it "should not show 'delete' links" do
+        get(:index)
+
+        @users[0..29].each do |u|
+          response.should_not have_selector("a", :href => "/users/#{ u.id }",
+                                                 :content => "Delete")
+        end
+      end
+
+      it "should show 'delete' links for admin users" do
+        admin = FactoryGirl.create(:admin, :email => "admin@example.org")
+        test_sign_in(admin)
+
+        get(:index)
+
+        @users[0..29].each do |u|
+          response.should have_selector("a", :href => "/users/#{ u.id }",
+                                             :content => "Delete")
+        end
       end
 
     end
@@ -299,6 +331,17 @@ describe UsersController do
     it "should have a Password Confirmation field" do
       get(:new)
       response.should have_selector("input[name='user[password_confirmation]'][type='password']")
+    end
+
+    describe "for signed-in users" do
+
+      it "should redirect to the root" do
+        user = FactoryGirl.create(:user)
+        test_sign_in(user)
+
+        get(:new)
+        response.should redirect_to(root_path)
+      end
     end
 
   end
