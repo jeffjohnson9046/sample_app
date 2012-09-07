@@ -43,9 +43,8 @@ describe UsersController do
       end
 
       it "should redirect to the 'user' page" do
-        lambda do
-          delete(:destroy, :id => @user)
-        end.should redirect_to(users_path)
+        delete(:destroy, :id => @user)
+        response.should redirect_to(users_path)
       end
 
       it "should not be able to destroy its own account" do
@@ -168,6 +167,16 @@ describe UsersController do
     it "should have a profile image" do
       get(:show, :id => @user)
       response.should have_selector("h1 > img", :class => "gravatar")
+    end
+
+    it "should show the user's posts" do
+      first_post = FactoryGirl.create(:micropost, :user => @user, :content => "This is not the post you're looking for.")
+      second_post = FactoryGirl.create(:micropost, :user => @user, :content => "Opportunity star.")
+
+      get(:show, :id => @user)
+
+      response.should have_selector("span.content", :content => first_post.content)
+      response.should have_selector("span.content", :content => second_post.content)
     end
 
   end

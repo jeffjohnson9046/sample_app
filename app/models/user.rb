@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessible :email, :name, :password, :password_confirmation
 
+  # ------------------- VALIDATION ------------------- #
   email_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
   validates(:name, :presence    => true,
@@ -27,8 +28,13 @@ class User < ActiveRecord::Base
                        :confirmation  => true,
                        :length        => { :within => 6..40 })
 
+
+  # ------------------- ACTIVE RECORD CONFIGURATION ------------------- #
+  has_many :microposts, :dependent => :destroy
+
   # Wire up to ActiveRecord's "before_save" callback...
   before_save :encrypt_password
+
 
   def has_password?(submitted_password)
     encrypted_password == encrypt(submitted_password)

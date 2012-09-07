@@ -16,3 +16,10 @@ FactoryGirl.define do
     "email-#{ i }@example.com"
   end
 end
+
+FactoryGirl.define do
+  factory :micropost do
+    content "Foo bar"
+    association :user
+  end
+end

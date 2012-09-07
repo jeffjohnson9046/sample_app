@@ -1,8 +1,16 @@
 class UsersController < ApplicationController
   include SessionsHelper
+
   before_filter :authenticate, :only => [:edit, :index, :update, :destroy]
   before_filter :correct_user, :only => [:edit, :update]
   before_filter :admin_user, :only => :destroy
+
+
+  # GET /users
+  def index
+    @title = "All Users"
+    @users = User.paginate(:page => params[:page]) # <-- the "paginate" method comes from the will_paginate gem.
+  end
 
   # POST /users
   def create
@@ -44,12 +52,6 @@ class UsersController < ApplicationController
     @title = "Edit User"
   end
 
-  # GET /users
-  def index
-    @title = "All Users"
-    @users = User.paginate(:page => params[:page]) # <-- the "paginate" method comes from the will_paginate gem.
-  end
-
   # GET /users/new
   def new
     redirect_to(root_path) if signed_in?
@@ -61,6 +63,7 @@ class UsersController < ApplicationController
   # GET /users/1
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(:page => params[:page])
     @title = @user.name
   end
 
@@ -84,10 +87,6 @@ class UsersController < ApplicationController
 
     def admin_user
       redirect_to(root_path) unless current_user.admin?
-    end
-
-    def authenticate
-      deny_access unless signed_in?
     end
 
     def correct_user

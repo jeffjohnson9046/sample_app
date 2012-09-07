@@ -70,6 +70,7 @@ describe User do
     user_with_duplicate_email.should_not be_valid
   end
 
+
   describe "admin attribute" do
 
     before(:each) do
@@ -91,6 +92,34 @@ describe User do
 
   end
 
+
+  describe "micropost associations" do
+
+    before(:each) do
+      @user = User.create(@attr)
+      @first_post = FactoryGirl.create(:micropost, :user => @user, :created_at => 1.day.ago)
+      @second_post = FactoryGirl.create(:micropost, :user => @user, :created_at => 1.hour.ago)
+    end
+
+    it "should have a 'microposts' attribute" do
+      @user.should respond_to(:microposts)
+    end
+
+    it "should have the right microposts in the right order" do
+      @user.microposts.should == [@second_post, @first_post]
+    end
+
+    it "should destroy associated Microposts when the User is destroyed" do
+      @user.destroy
+
+      [@first_post, @second_post].each do |micropost|
+        Micropost.find_by_id(micropost.id).should be_nil
+      end
+    end
+
+  end
+
+
   describe "password validations" do
 
     it "should require a password" do
@@ -108,6 +137,7 @@ describe User do
     end
 
   end
+
 
   describe "password encryption" do
 
@@ -134,6 +164,7 @@ describe User do
       end
 
     end
+
 
     describe "authenticate method" do
 

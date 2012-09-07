@@ -1,4 +1,8 @@
 SampleApp::Application.routes.draw do
+  get "microposts/create"
+
+  get "microposts/destroy"
+
   get "sessions/new"
 
   resources :users
@@ -21,6 +25,14 @@ SampleApp::Application.routes.draw do
   # GET        /signin         new         signin_path
   # POST       /sessions       create      session_path
   # DELETE     /signout        destroy     signout_path
+
+  resources :microposts, :only => [:create, :destroy]
+
+  # REQUEST    URL             ACTION      NAMED ROUTE
+  # --------------------------------------------------------
+  # POST       /microposts     create      micropost_path
+  # DELETE     /microposts/1   destroy     micropost_path(1)
+
 
 
   match '/contact', :to => 'pages#contact'

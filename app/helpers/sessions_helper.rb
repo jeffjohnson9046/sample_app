@@ -1,5 +1,9 @@
 # Putting the sign_in method here makes it available to both controllers and views.
 module SessionsHelper
+  def authenticate
+    deny_access unless signed_in?
+  end
+
   def current_user
     @current_user ||= user_from_remember_token
   end
