@@ -117,6 +117,25 @@ describe User do
       end
     end
 
+
+    describe "status feed" do
+      it "should have a feed" do
+        @user.should respond_to(:feed)
+      end
+
+      it "should include a user's microposts" do
+        @user.feed.include?(@first_post).should be_true
+        @user.feed.include?(@second_post).should be_true
+      end
+
+      it "should not include a different user's microposts" do
+        @third_post = FactoryGirl.create(:micropost,
+                                         :user => FactoryGirl.create(:user, :email => FactoryGirl.generate(:email)))
+
+        @user.feed.include?(@third_post).should be_false
+      end
+    end
+
   end
 
 
