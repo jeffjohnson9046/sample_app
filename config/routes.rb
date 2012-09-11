@@ -5,7 +5,12 @@ SampleApp::Application.routes.draw do
 
   get "sessions/new"
 
-  resources :users
+  resources :users do
+    member do
+      get :followers, :following
+    end
+  end
+
   # Adding the resources :users line creates the following named routes automagically:
 
   # REQUEST    URL             ACTION      NAMED ROUTE
@@ -17,6 +22,13 @@ SampleApp::Application.routes.draw do
   # GET        /users/1/edit   edit        edit_user_path(1)
   # PUT        /users/1        update      user_path(1)
   # DELETE     /users/1        destroy     user_path(1)
+
+  # Adding the member do... block creates the following named routes:
+
+  # REQUEST    URL                  ACTION      NAMED ROUTE
+  # --------------------------------------------------------
+  # GET        /users/1/following   following   following_user_path(1)
+  # GET        /users/1/followers   followers   followers_user_path(1)
 
   resources :sessions, :only => [:new, :create, :destroy]
 
@@ -33,7 +45,7 @@ SampleApp::Application.routes.draw do
   # POST       /microposts     create      micropost_path
   # DELETE     /microposts/1   destroy     micropost_path(1)
 
-
+  resources :relationships, :only => [:create, :destroy]
 
   match '/contact', :to => 'pages#contact'
   match '/about',   :to => 'pages#about'
@@ -103,3 +115,29 @@ SampleApp::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
 end
+#== Route Map
+# Generated on 10 Sep 2012 16:04
+#
+# microposts_destroy GET    /microposts/destroy(.:format)  microposts#destroy
+#       sessions_new GET    /sessions/new(.:format)        sessions#new
+#     followers_user GET    /users/:id/followers(.:format) users#followers
+#     following_user GET    /users/:id/following(.:format) users#following
+#              users GET    /users(.:format)               users#index
+#                    POST   /users(.:format)               users#create
+#           new_user GET    /users/new(.:format)           users#new
+#          edit_user GET    /users/:id/edit(.:format)      users#edit
+#               user GET    /users/:id(.:format)           users#show
+#                    PUT    /users/:id(.:format)           users#update
+#                    DELETE /users/:id(.:format)           users#destroy
+#           sessions POST   /sessions(.:format)            sessions#create
+#        new_session GET    /sessions/new(.:format)        sessions#new
+#            session DELETE /sessions/:id(.:format)        sessions#destroy
+#         microposts POST   /microposts(.:format)          microposts#create
+#          micropost DELETE /microposts/:id(.:format)      microposts#destroy
+#            contact        /contact(.:format)             pages#contact
+#              about        /about(.:format)               pages#about
+#               help        /help(.:format)                pages#help
+#             signin        /signin(.:format)              sessions#new
+#            signout        /signout(.:format)             sessions#destroy
+#             signup        /signup(.:format)              users#new
+#               root        /                              pages#home

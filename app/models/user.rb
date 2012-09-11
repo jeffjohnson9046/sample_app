@@ -2,12 +2,16 @@
 #
 # Table name: users
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                 :integer          not null, primary key
+#  name               :string(255)
+#  email              :string(255)
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  encrypted_password :string(255)
+#  salt               :string(255)
+#  admin              :boolean          default(FALSE)
 #
+
 require 'digest'
 
 class User < ActiveRecord::Base
@@ -32,6 +36,19 @@ class User < ActiveRecord::Base
   # ------------------- ACTIVE RECORD CONFIGURATION ------------------- #
   has_many :microposts, :dependent => :destroy
 
+  has_many :relationships, :foreign_key => "follower_id",
+                           :dependent   => :destroy
+
+  has_many :following, :through => :relationships,
+                       :source  => :followed
+
+  has_many :reverse_relationships, :foreign_key => "followed_id",
+                                   :class_name  => "Relationship",
+                                   :dependent   => :destroy
+
+  has_many :followers, :through => :reverse_relationships,
+                                   :source => :follower
+
   # Wire up to ActiveRecord's "before_save" callback...
   before_save :encrypt_password
 
@@ -39,8 +56,20 @@ class User < ActiveRecord::Base
     Micropost.where("user_id = ?", id)
   end
 
+  def follow!(followed)
+    relationships.create!(:followed_id => followed.id)
+  end
+
+  def following?(followed)
+    relationships.find_by_followed_id(followed)
+  end
+
   def has_password?(submitted_password)
     encrypted_password == encrypt(submitted_password)
+  end
+
+  def unfollow!(followed)
+    relationships.find_by_followed_id(followed).destroy
   end
 
   def self.authenticate(email, submitted_password)
@@ -69,11 +98,11 @@ class User < ActiveRecord::Base
     end
 
     def encrypt(string)
-      secure_hash("#{salt}--#{string}")
+      secure_hash("#{ salt }--#{ string }")
     end
 
     def make_salt
-      secure_hash("#{Time.now.utc}--#{password}")
+      secure_hash("#{ Time.now.utc }--#{ password }")
     end
 
     def secure_hash(input)

@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   include SessionsHelper
 
-  before_filter :authenticate, :only => [:edit, :index, :update, :destroy]
+  #before_filter :authenticate, :only => [:edit, :index, :update, :destroy]
+  before_filter :authenticate, :except => [:show, :new, :create]
   before_filter :correct_user, :only => [:edit, :update]
   before_filter :admin_user, :only => :destroy
 
@@ -50,6 +51,22 @@ class UsersController < ApplicationController
   def edit
     #@user = User.find(params[:id])  <-- can be removed because we already have a handle on @user from the before_filter
     @title = "Edit User"
+  end
+
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(:page => params[:page])
+
+    render('show_follow')
+  end
+
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.following.paginate(:page => params[:page])
+
+    render('show_follow')
   end
 
   # GET /users/new

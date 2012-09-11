@@ -4,6 +4,48 @@ describe UsersController do
   render_views
 
 
+  describe "follow pages" do
+
+    describe "when not signed in" do
+
+     it "should protect 'following'" do
+        get(:following, :id => 1)
+        response.should redirect_to(signin_path)
+      end
+
+      it "should protect 'followers'" do
+        get(:followers, :id => 1)
+        response.should redirect_to(signin_path)
+      end
+
+    end
+
+
+    describe "when signed in" do
+
+      before(:each) do
+        @user = test_sign_in(FactoryGirl.create(:user))
+        @other_user = FactoryGirl.create(:user, :email => FactoryGirl.generate(:email))
+        @user.follow!(@other_user)
+      end
+
+      it "should allow a user to follow another user" do
+        get(:following, :id => @user)
+        response.should have_selector("a", :href => user_path(@other_user),
+                                           :content => @other_user.name)
+      end
+
+      it "should show user followers" do
+        get(:followers, :id => @other_user)
+        response.should have_selector("a", :href => user_path(@user),
+                                           :content => @user.name)
+      end
+
+    end
+
+  end
+
+
   describe "DELETE 'destroy'" do
 
     before(:each) do
@@ -19,6 +61,7 @@ describe UsersController do
 
     end
 
+
     describe "as a user who does not have ADMIN privileges" do
 
       it "should protect the page" do
@@ -28,6 +71,7 @@ describe UsersController do
       end
 
     end
+
 
     describe "as an ADMIN user" do
 

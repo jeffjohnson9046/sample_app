@@ -2,16 +2,20 @@
 #
 # Table name: users
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id                 :integer          not null, primary key
+#  name               :string(255)
+#  email              :string(255)
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  encrypted_password :string(255)
+#  salt               :string(255)
+#  admin              :boolean          default(FALSE)
 #
 
 require 'spec_helper'
 
 describe User do
+
   before(:each) do
     @attr = {
         :name => "Some User",
@@ -202,6 +206,51 @@ describe User do
         valid_user.should == @user
       end
 
+    end
+
+  end
+
+
+  describe "relationships" do
+
+    before(:each) do
+      @user = User.create!(@attr)
+      @followed = FactoryGirl.create(:user)
+    end
+
+    it "should have a relationship method" do
+      @user.should respond_to(:relationships)
+    end
+
+    it "should have a following method" do
+      @user.should respond_to(:following)
+    end
+
+    it "should have a following? method" do
+      @user.should respond_to(:following?)
+    end
+
+    it "should have a follow! method" do
+      @user.should respond_to(:follow!)
+    end
+
+    it "should follow another user" do
+      @user.follow!(@followed)
+    end
+
+    it "should include the followed user in the following array" do
+      @user.follow!(@followed)
+      @user.following.should include(@followed)
+    end
+
+    it "should have an unfollow! method" do
+      @user.should respond_to(:unfollow!)
+    end
+
+    it "should be able to no longer follow a user" do
+      @user.follow!(@followed)
+      @user.unfollow!(@followed)
+      @user.following.should_not include(@followed)
     end
 
   end
