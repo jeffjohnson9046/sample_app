@@ -136,8 +136,18 @@ describe User do
         @third_post = FactoryGirl.create(:micropost,
                                          :user => FactoryGirl.create(:user, :email => FactoryGirl.generate(:email)))
 
-        @user.feed.include?(@third_post).should be_false
+        @user.feed.should_not include(@third_post)
       end
+
+      it "should include Microposts from users that are being followed" do
+        user_being_followed = FactoryGirl.create(:user, :email => FactoryGirl.generate(:email))
+        post_from_followed_user = FactoryGirl.create(:micropost, :user => user_being_followed)
+
+        @user.follow!(user_being_followed)
+
+        @user.feed.should include(post_from_followed_user)
+      end
+
     end
 
   end
@@ -240,6 +250,7 @@ describe User do
 
     it "should include the followed user in the following array" do
       @user.follow!(@followed)
+
       @user.following.should include(@followed)
     end
 
@@ -250,6 +261,7 @@ describe User do
     it "should be able to no longer follow a user" do
       @user.follow!(@followed)
       @user.unfollow!(@followed)
+
       @user.following.should_not include(@followed)
     end
 

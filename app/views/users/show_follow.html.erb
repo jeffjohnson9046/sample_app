@@ -2,11 +2,13 @@
   <tr>
     <td class="main">
       <h1><%= @title %></h1>
+      <%= will_paginate(@users) %>
 
       <% unless @users.empty? %>
         <ul class="users">
           <%= render(@users) %>
         </ul>
+
         <%= will_paginate(@users) %>
       <% end %>
     </td>
